@@ -1,0 +1,26 @@
+{
+  "name": "bee-dodger-ts",
+  "version": "1.0.0",
+  "description": "A game about dodging bees, re-written in TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aszecsei/bee-dodger-ts.git"
+  },
+  "keywords": [
+    "game",
+    "typescript",
+    "canvas",
+    "javascript",
+    "bees"
+  ],
+  "author": "Alic Szecsei",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aszecsei/bee-dodger-ts/issues"
+  },
+  "homepage": "https://github.com/aszecsei/bee-dodger-ts#readme"
+}
