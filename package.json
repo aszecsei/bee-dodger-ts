@@ -22,5 +22,28 @@
   "bugs": {
     "url": "https://github.com/aszecsei/bee-dodger-ts/issues"
   },
-  "homepage": "https://github.com/aszecsei/bee-dodger-ts#readme"
+  "homepage": "https://github.com/aszecsei/bee-dodger-ts#readme",
+  "devDependencies": {
+    "browser-sync": "^2.18.13",
+    "browserify": "^14.5.0",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-if": "^2.0.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-tslint": "^8.1.2",
+    "gulp-typescript": "^3.2.3",
+    "gulp-uglify": "^3.0.0",
+    "gulp-useref": "^3.1.3",
+    "jest-cli": "^22.0.1",
+    "rollup": "^0.52.2",
+    "run-sequence": "^2.2.0",
+    "tsify": "^3.0.4",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2",
+    "useref": "^1.4.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
 }
