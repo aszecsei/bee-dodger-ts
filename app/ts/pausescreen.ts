@@ -4,6 +4,7 @@ import { InputManager, Key } from "./input";
 import { OptionsScreen } from "./optionsscreen";
 import { IScreen } from "./screen";
 import { TitleScreen } from "./titlescreen";
+import { AudioManager } from "./audiomanager";
 
 export class PauseScreen implements IScreen {
     private prevScreen: IScreen;
@@ -40,7 +41,7 @@ export class PauseScreen implements IScreen {
             } else if (this.selected === 1) {
                 game.SetUpScreen(OptionsScreen);
             } else if (this.selected === 2) {
-                // TODO: Fade out the music
+                AudioManager.stopMusic();
                 game.SetUpScreen(TitleScreen);
             }
         }

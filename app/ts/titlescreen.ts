@@ -1,6 +1,7 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./config";
 import { CreditsScreen } from "./creditsscreen";
 import { game } from "./game";
+import { GameScreen } from "./gamescreen";
 import { HelpScreen } from "./helpscreen";
 import { InputManager, Key } from "./input";
 import { OptionsScreen } from "./optionsscreen";
@@ -56,7 +57,7 @@ export class TitleScreen implements IScreen {
     }
 
     private chooseGame() {
-        // TODO: Create game screen
+        game.SetUpScreen(GameScreen);
     }
 
     private chooseOptions() {
