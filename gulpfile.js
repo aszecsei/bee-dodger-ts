@@ -18,6 +18,7 @@ const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
 const gutil = require("gulp-util");
 const watchify = require("watchify");
+const babelify = require("babelify");
 
 gulp.task('sass', function() {
   return gulp.src('app/scss/**/*.scss')
@@ -83,10 +84,8 @@ gulp.task('typescript', function() {
     cache: {},
     packageCache: {}
   })
-  .plugin(tsify, {
-    allowSyntheticDefaultImports: true,
-    noImplicitAny: true
-  })
+  .plugin(tsify, { target: 'es6' })
+  .transform(babelify, { extensions: [ '.tsx', '.ts' ] })
   .bundle()
   .pipe(source('app.js'))
   .pipe(buffer())
@@ -110,16 +109,14 @@ gulp.task('default', function(callback) {
 });
 
 var watchedBrowserify = watchify(browserify({
-  basedir: '.',
-  debug: true,
-  entries: ['app/ts/main.ts'],
-  cache: {},
-  packageCache: {}
-})
-.plugin(tsify, {
-  allowSyntheticDefaultImports: true,
-  noImplicitAny: true
-}));
+    basedir: '.',
+    debug: true,
+    entries: ['app/ts/main.ts'],
+    cache: {},
+    packageCache: {}
+  })
+  .plugin(tsify, { target: 'es6' })
+  .transform(babelify, {presets: ["env"], extensions: [ '.tsx', '.ts' ] }));
 
 function bundle() {
   return watchedBrowserify
