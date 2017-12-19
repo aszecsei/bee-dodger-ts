@@ -1,5 +1,3 @@
-import * as Collections from 'typescript-collections';
-
 export enum Key {
     BACKSPACE = 8,
     TAB = 9,
@@ -99,49 +97,46 @@ export enum Key {
     OPEN_BRACKET = 219,
     BACK_SLASH = 220,
     CLOSE_BRACKET = 221,
-    SINGLE_QUOTE = 222
+    SINGLE_QUOTE = 222,
 }
 
-export class InputManager {
-    private constructor() {}
+class CInputManager {
 
-    private static mInstance = new InputManager();
+    private mPressed = new Set<Key>();
+    private mLastPressed = new Set<Key>();
 
-    private mPressed = new Collections.Set<Key>();
-    private mLastPressed = new Collections.Set<Key>();
-
-    static GetInstance() {
-        return InputManager.mInstance;
+    public isDown(keyCode: Key) {
+        return this.mPressed.has(keyCode);
     }
 
-    isDown(keyCode: Key) {
-        return this.mPressed.contains(keyCode);
+    public pressed(keyCode: Key) {
+        return this.mPressed.has(keyCode) && !this.mLastPressed.has(keyCode);
     }
 
-    pressed(keyCode: Key) {
-        return this.mPressed.contains(keyCode) && !this.mLastPressed.contains(keyCode);
+    public isUp(keyCode: Key) {
+        return !this.mPressed.has(keyCode);
     }
 
-    isUp(keyCode: Key) {
-        return !this.mPressed.contains(keyCode);
+    public released(keyCode: Key) {
+        return !this.mPressed.has(keyCode) && this.mLastPressed.has(keyCode);
     }
 
-    released(keyCode: Key) {
-        return !this.mPressed.contains(keyCode) && this.mLastPressed.contains(keyCode);
-    }
-
-    onKeydown(event: KeyboardEvent) {
+    public onKeydown(event: KeyboardEvent) {
         this.mPressed.add(event.keyCode);
         event.preventDefault();
     }
 
-    onKeyup(event: KeyboardEvent) {
-        this.mPressed.remove(event.keyCode);
+    public onKeyup(event: KeyboardEvent) {
+        this.mPressed.delete(event.keyCode);
         event.preventDefault();
     }
 
-    flush() {
+    public flush() {
         this.mLastPressed.clear();
-        this.mLastPressed.union(this.mPressed);
+        this.mPressed.forEach((k: Key) => {
+            this.mLastPressed.add(k);
+        });
     }
 }
+
+export const InputManager = new CInputManager();

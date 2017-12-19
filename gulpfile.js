@@ -16,6 +16,8 @@ const browserify = require('browserify');
 const tsify = require('tsify');
 const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
+const gutil = require("gulp-util");
+const watchify = require("watchify");
 
 gulp.task('sass', function() {
   return gulp.src('app/scss/**/*.scss')
@@ -106,3 +108,38 @@ gulp.task('default', function(callback) {
     callback
   );
 });
+
+var watchedBrowserify = watchify(browserify({
+  basedir: '.',
+  debug: true,
+  entries: ['app/ts/main.ts'],
+  cache: {},
+  packageCache: {}
+})
+.plugin(tsify, {
+  allowSyntheticDefaultImports: true,
+  noImplicitAny: true
+}));
+
+function bundle() {
+  return watchedBrowserify
+  .bundle()
+  .pipe(source('app.js'))
+  .pipe(buffer())
+  .pipe(sourcemaps.init({loadMaps: true}))
+  .pipe(sourcemaps.write('./'))
+  .pipe(gulp.dest("app/js"));
+}
+
+gulp.task('watch-ts', bundle);
+
+watchedBrowserify.on("update", bundle);
+watchedBrowserify.on("log", gutil.log);
+
+gulp.task("tslint", () =>
+    gulp.src("app/ts/**/*.ts")
+        .pipe(tslint({
+            formatter: "verbose"
+        }))
+        .pipe(tslint.report())
+);

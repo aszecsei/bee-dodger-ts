@@ -1,17 +1,17 @@
-import { IScreenConstructor, IScreen } from './screen';
-import { TitleScreen } from './titlescreen';
+import { IScreen, IScreenConstructor } from "./screen";
+import { TitleScreen } from "./titlescreen";
 
 class Game {
-    currentScreen: IScreen;
+    public currentScreen: IScreen;
 
-    SetUpScreen(ScreenType: IScreenConstructor) {
+    public constructor() {
+        this.SetUpScreen(TitleScreen);
+    }
+
+    public SetUpScreen(ScreenType: IScreenConstructor) {
         const mOldScreen = this.currentScreen;
         const newScreen = new ScreenType(mOldScreen);
         this.currentScreen = newScreen;
-    }
-
-    constructor() {
-        this.SetUpScreen(TitleScreen);
     }
 }
 
