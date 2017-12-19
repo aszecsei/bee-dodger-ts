@@ -81,7 +81,10 @@ gulp.task('typescript', function() {
     cache: {},
     packageCache: {}
   })
-  .plugin(tsify)
+  .plugin(tsify, {
+    allowSyntheticDefaultImports: true,
+    noImplicitAny: true
+  })
   .bundle()
   .pipe(source('app.js'))
   .pipe(buffer())

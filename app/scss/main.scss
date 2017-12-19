@@ -1,5 +1,5 @@
 @font-face {
-  font-family: "PressStart2P";
+  font-family: "Press Start 2P";
   src: url('../fonts/PressStart2P-Regular.ttf');
 }
 
@@ -11,4 +11,15 @@ image, canvas {
   -moz-user-select: none;
   -webkit-touch-callout: none;
   -webkit-user-drag: none;
+}
+
+body {
+  background-color: black;
+  color: white;
+}
+
+canvas {
+  background-color: black;
+  display: block;
+  margin: 0 auto 0 auto;
 }
