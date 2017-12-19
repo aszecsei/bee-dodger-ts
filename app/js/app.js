@@ -1,6 +1,87 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
+var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) {
+            try {
+                step(generator.next(value));
+            } catch (e) {
+                reject(e);
+            }
+        }
+        function rejected(value) {
+            try {
+                step(generator["throw"](value));
+            } catch (e) {
+                reject(e);
+            }
+        }
+        function step(result) {
+            result.done ? resolve(result.value) : new P(function (resolve) {
+                resolve(result.value);
+            }).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = require("./config");
+class CAudioManager {
+    constructor() {
+        this.context = new AudioContext();
+        this.gainNode = this.context.createGain();
+        this.gainNode.connect(this.context.destination);
+        this.musicTime = 0;
+    }
+    getBuffer(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise(resolve => {
+                const request = new XMLHttpRequest();
+                request.open("GET", url, true);
+                request.responseType = "arraybuffer";
+                request.onload = () => {
+                    this.context.decodeAudioData(request.response, buffer => {
+                        resolve(buffer);
+                    });
+                };
+                request.send();
+            });
+        });
+    }
+    playSound(buffer) {
+        const source = this.context.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.context.destination);
+        source.start(0);
+    }
+    startMusic(buffer) {
+        this.musicSource = this.context.createBufferSource();
+        this.musicSource.buffer = buffer;
+        this.musicSource.loop = true;
+        this.musicSource.connect(this.gainNode);
+        this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime);
+        this.gainNode.gain.linearRampToValueAtTime(1, this.context.currentTime + config_1.FADE_IN_TIME);
+        this.musicSource.start(this.musicTime);
+    }
+    stopMusic() {
+        this.gainNode.gain.linearRampToValueAtTime(1, this.context.currentTime);
+        this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + config_1.FADE_OUT_TIME);
+        this.musicSource.stop(this.context.currentTime + config_1.FADE_OUT_TIME);
+        this.musicTime = 0;
+    }
+    pauseMusic() {
+        this.gainNode.gain.linearRampToValueAtTime(1, this.context.currentTime);
+        this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + config_1.FADE_OUT_TIME);
+        this.musicSource.stop(this.context.currentTime + config_1.FADE_OUT_TIME);
+        this.musicTime = this.context.currentTime + config_1.FADE_OUT_TIME;
+    }
+}
+exports.AudioManager = new CAudioManager();
+
+},{"./config":2}],2:[function(require,module,exports){
+"use strict";
+
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CANVAS_WIDTH = 1100;
 exports.CANVAS_HEIGHT = 600;
@@ -10,7 +91,7 @@ exports.DEBUG = true;
 exports.CANVAS_OFFSET_X = exports.CANVAS_WIDTH / 2;
 exports.CANVAS_OFFSET_Y = 144 + 202;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -45,7 +126,7 @@ class CreditsScreen {
 }
 exports.CreditsScreen = CreditsScreen;
 
-},{"./config":1,"./game":3,"./input":5}],3:[function(require,module,exports){
+},{"./config":2,"./game":4,"./input":6}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -62,7 +143,7 @@ class Game {
 }
 exports.game = new Game();
 
-},{"./titlescreen":8}],4:[function(require,module,exports){
+},{"./titlescreen":10}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -99,7 +180,7 @@ class HelpScreen {
 }
 exports.HelpScreen = HelpScreen;
 
-},{"./config":1,"./game":3,"./input":5}],5:[function(require,module,exports){
+},{"./config":2,"./game":4,"./input":6}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -239,13 +320,14 @@ class CInputManager {
 }
 exports.InputManager = new CInputManager();
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const config = require("./config");
 const game_1 = require("./game");
 const input_1 = require("./input");
+const Resource = require("./resources");
 const canvas = document.getElementById("canvas");
 canvas.width = config.CANVAS_WIDTH;
 canvas.height = config.CANVAS_HEIGHT;
@@ -255,7 +337,17 @@ ctx.textBaseline = "middle";
 canvas.width = config.CANVAS_WIDTH;
 canvas.height = config.CANVAS_HEIGHT;
 const FPS = 30;
-// TODO: Load all resources
+Resource.loadImage("background", "img/bg.png");
+Resource.loadImage("player", "img/player.png");
+Resource.loadImage("basic bee", "img/basicbee.png");
+Resource.loadImage("big bee", "img/bigbee.png");
+Resource.loadImage("bee time", "img/beetime.png");
+Resource.loadImage("bumblebee", "img/bumblebee.png");
+Resource.loadImage("honey", "img/Honey_Anim.png");
+Resource.loadImage("honey bee", "img/honeybee.png");
+Resource.loadImage("eldritch bee", "img/eldritch_anim.png");
+Resource.loadImage("laser bee", "img/laser bee complete.png");
+Resource.loadAudio("bgm", "audio/beedodger.ogg");
 let last = -1;
 const fpsList = [0];
 // add input listeners
@@ -288,7 +380,7 @@ function gameloop(ts) {
 }
 window.requestAnimationFrame(gameloop);
 
-},{"./config":1,"./game":3,"./input":5}],7:[function(require,module,exports){
+},{"./config":2,"./game":4,"./input":6,"./resources":9}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -339,7 +431,33 @@ class OptionsScreen {
 }
 exports.OptionsScreen = OptionsScreen;
 
-},{"./config":1,"./game":3,"./input":5}],8:[function(require,module,exports){
+},{"./config":2,"./game":4,"./input":6}],9:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const audiomanager_1 = require("./audiomanager");
+const images = new Map();
+const audio = new Map();
+function getAudio(name) {
+    return audio.get(name);
+}
+exports.getAudio = getAudio;
+function getImage(name) {
+    return images.get(name);
+}
+exports.getImage = getImage;
+function loadImage(name, path) {
+    const img = new HTMLImageElement();
+    img.src = path;
+    images.set(name, img);
+}
+exports.loadImage = loadImage;
+function loadAudio(name, path) {
+    audiomanager_1.AudioManager.getBuffer(path).then(buffer => audio.set(name, buffer));
+}
+exports.loadAudio = loadAudio;
+
+},{"./audiomanager":1}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -404,6 +522,6 @@ class TitleScreen {
 }
 exports.TitleScreen = TitleScreen;
 
-},{"./config":1,"./creditsscreen":2,"./game":3,"./helpscreen":4,"./input":5,"./optionsscreen":7}]},{},[6])
+},{"./config":2,"./creditsscreen":3,"./game":4,"./helpscreen":5,"./input":6,"./optionsscreen":8}]},{},[7])
 
 //# sourceMappingURL=app.js.map

@@ -1,6 +1,7 @@
 import * as config from "./config";
 import { game } from "./game";
 import { InputManager, Key } from "./input";
+import * as Resource from "./resources";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 canvas.width = config.CANVAS_WIDTH;
@@ -12,7 +13,17 @@ canvas.width = config.CANVAS_WIDTH;
 canvas.height = config.CANVAS_HEIGHT;
 const FPS = 30;
 
-// TODO: Load all resources
+Resource.loadImage("background", "img/bg.png");
+Resource.loadImage("player", "img/player.png");
+Resource.loadImage("basic bee", "img/basicbee.png");
+Resource.loadImage("big bee", "img/bigbee.png");
+Resource.loadImage("bee time", "img/beetime.png");
+Resource.loadImage("bumblebee", "img/bumblebee.png");
+Resource.loadImage("honey", "img/Honey_Anim.png");
+Resource.loadImage("honey bee", "img/honeybee.png");
+Resource.loadImage("eldritch bee", "img/eldritch_anim.png");
+Resource.loadImage("laser bee", "img/laser bee complete.png");
+Resource.loadAudio("bgm", "audio/beedodger.ogg");
 
 let last = -1;
 const fpsList = [0];
